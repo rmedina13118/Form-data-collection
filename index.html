@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Formulario para captura de datos</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f9f9f9;
+            margin: 0;
+            padding: 20px;
+        }
+
+        form {
+            max-width: 400px;
+            margin: auto;
+            padding: 20px;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        select,
+        input,
+        button {
+            width: 100%;
+            margin-bottom: 15px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+
+<body>
+    <form id="registroForm">
+        <label for="empresa">Empresa:</label>
+        <select id="empresa" name="empresa" required>
+            <option value="">Seleccione una empresa</option>
+            <option value="coemprender">Cooperativa Coemprender</option>
+            <option value="alkosto">Alkosto</option>
+            <option value="reCyclers">ReCyclers Inc</option>
+            <option value="techRecycleSolutions">TechRecycle Solutions</option>
+            <option value="cleanEarth">CleanEarth</option>
+            <option value="greenCycle">GreenCycle Ltd</option>
+            <option value="ecoReclaim">EcoReclaim</option>
+        </select>
+
+        <label for="tipoMaterial">Tipo de Material:</label>
+        <select id="tipoMaterial" name="tipoMaterial" required>
+            <option value="">Seleccione un material</option>
+            <option value="Papel">Papel</option>
+            <option value="Cartón">Cartón</option>
+            <option value="Plástico">Plástico</option>
+            <option value="Metal">Metal</option>
+            <option value="Pasta">Pasta</option>
+            <option value="Vídrio">Vídrio</option>
+            <option value="Mixto">Mixto</option>
+            <option value="RAEE">RAEE</option>
+            <option value="Otros">Otros</option>
+
+        </select>
+
+        <label for="subcategoria">Subcategoría:</label>
+        <select id="subcategoria" name="subcategoria" required>
+            <option value="">Seleccione una subcategoría</option>
+        </select>
+
+        <label for="peso">Peso (kg):</label>
+        <input type="number" id="peso" name="peso" step="0.01" required>
+
+        <label for="fecha">Fecha:</label>
+        <input type="text" id="fecha" name="fecha" readonly>
+
+        <button type="submit">Enviar</button>
+    </form>
+
+    <script>
+        // Opciones de subcategorías para cada tipo de material
+        const subcategorias = {
+            Papel: ["Archivo", "Cartulina y/o plegadiza", "Kraf", "Revista", "Prensa"],
+            Cartón: ["Cartón", "Tubo"],
+            Plástico: ["PET transparente", "PET aceite", "PET café", "PET verde", "Transparente", "Policolor"],
+            Metal: ["Alambre", "Aluminio olla", "Bronce", "Chatarra", "Clausen lata", "Cobre",],
+            Pasta: ["Cajones de gaseosa/cerveza", "Canecas 5 galones", "Sillas Rimax", "Canastillas", "Ganchos de ropa", "Tarros de Límpido", "Envases de shampoo", "Envases de manteca", "Tarros de pintura", "Tubos de PVC",],
+            Vídrio: ["Vidrio casco transparente limpio", "Vidrio casco transparente sucio", "Vidrio casco verde", "Vidrio casco café", "Vidrio casco azul",],
+            RAEE: ["Computadores", "Teclados", "Mouse", "pantallas", "Luminarias", "Cables", "Registradoras", "Calculadoras", "Fax", "Maquinas de escribir"],
+            Otros: ["Sacas", "Escritorios", "Archivadores", "Sillas"],
+        };
+
+        // Elementos del formulario
+        const tipoMaterialSelect = document.getElementById("tipoMaterial");
+        const subcategoriaSelect = document.getElementById("subcategoria");
+
+        // Actualizar subcategorías dinámicamente
+        tipoMaterialSelect.addEventListener("change", function () {
+            const materialSeleccionado = tipoMaterialSelect.value;
+
+            // Limpiar opciones anteriores
+            subcategoriaSelect.innerHTML = '<option value="">Seleccione una subcategoría</option>';
+
+            // Agregar nuevas opciones basadas en el material seleccionado
+            if (materialSeleccionado && subcategorias[materialSeleccionado]) {
+                subcategorias[materialSeleccionado].forEach((subcategoria) => {
+                    const option = document.createElement("option");
+                    option.value = subcategoria;
+                    option.textContent = subcategoria;
+                    subcategoriaSelect.appendChild(option);
+                });
+            }
+        });
+
+        // Autollenar el campo de fecha con formato "Mes Año"
+        document.addEventListener("DOMContentLoaded", function () {
+            const fechaInput = document.getElementById("fecha");
+
+            // Lista de meses en español
+            const meses = ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"];
+
+            const hoy = new Date();
+            const mes = meses[hoy.getMonth()];
+            const anio = hoy.getFullYear();
+            const fechaFormateada = `${mes} ${anio}`;
+
+            fechaInput.value = fechaFormateada;
+        });
+
+
+        // Manejar el envío del formulario
+        document.getElementById("registroForm").addEventListener("submit", async function (e) {
+            e.preventDefault(); // Evitar el envío tradicional del formulario
+
+            // Recopilar los datos del formulario
+            const formData = {
+                empresa: document.getElementById("empresa").value,
+                tipoMaterial: tipoMaterialSelect.value,
+                subcategoria: subcategoriaSelect.value,
+                peso: document.getElementById("peso").value,
+                fecha: document.getElementById("fecha").value,
+            };
+
+            try {
+                // Enviar los datos al Apps Script
+                const response = await fetch("https://script.google.com/macros/s/AKfycbzXrUaSoGjsj7Q37v1tAmOfxxVyiHGR7LfoRmN4ge8zq2xSC0TqgyvxPFNdZjVHzXy8/exec", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify(formData),
+                });
+                console.log(response);
+
+
+                if (response.ok) {
+                    alert("¡Datos enviados exitosamente!");
+                    document.getElementById("registroForm").reset(); // Limpiar el formulario
+                    subcategoriaSelect.innerHTML = '<option value="">Seleccione una subcategoría</option>';
+                } else {
+                    alert("Error al enviar los datos. Inténtelo de nuevo.");
+                }
+            } catch (error) {
+                console.error("Error:", error);
+                alert("Error al conectar con el servidor.");
+            }
+        });
+    </script>
+</body>
+
+</html>

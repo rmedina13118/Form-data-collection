@@ -64,22 +64,23 @@ document.getElementById("registroForm").addEventListener("submit", async functio
 
     try {
         // Enviar los datos al Apps Script
-        const response = await fetch("https://script.google.com/macros/s/AKfycbzXrUaSoGjsj7Q37v1tAmOfxxVyiHGR7LfoRmN4ge8zq2xSC0TqgyvxPFNdZjVHzXy8/exec", {
+        const response = await fetch("https://script.google.com/macros/s/AKfycbxnl58plTN7L9mD2Fqm3QzWHLAHCMQaiZEET8tiFYDHMTBWq0m_p_W_e9PPaCnLjiQ7/exec", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
             },
             body: JSON.stringify(formData),
         });
-        console.log(response);
+        const result = await response.json()
+        console.log(result)
 
 
-        if (response.ok) {
+        if (result.success) {
             alert("¡Datos enviados exitosamente!");
-            document.getElementById("registroForm").reset(); // Limpiar el formulario
+            document.getElementById("registroForm").reset(); 
             subcategoriaSelect.innerHTML = '<option value="">Seleccione una subcategoría</option>';
         } else {
-            alert("Error al enviar los datos. Inténtelo de nuevo.");
+            alert("Error al enviar los datos " + result.message);
         }
     } catch (error) {
         console.error("Error:", error);
